@@ -19,6 +19,8 @@ function App() {
   const { mutate, isPending } = useExcelComparison();
 
   const handleCalculate = () => {
+    console.log('🔍 Starting calculation with files:', currentFile?.name, previousFile?.name);
+
     if (!currentFile || !previousFile) {
       setError('두 파일 모두 선택해주세요.');
       return;
@@ -28,11 +30,15 @@ function App() {
       { currentFile: currentFile.file, previousFile: previousFile.file },
       {
         onSuccess: (data: ComparisonResult) => {
+          console.log('✅ Calculation successful, result:', data);
           setResult(data);
           setError(null);
         },
         onError: (err: Error) => {
-          setError(err.message);
+          console.error('❌ Calculation error:', err);
+          console.error('Error message:', err.message);
+          console.error('Error stack:', err.stack);
+          setError(err.message || '계산 중 오류가 발생했습니다.');
           setResult(null);
         },
       }

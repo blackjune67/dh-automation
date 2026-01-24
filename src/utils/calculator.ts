@@ -34,8 +34,8 @@ export function sumif(
 ): number {
   let sum = 0;
 
-  // Skip header row (index 0), start from data row 1
-  for (let i = 1; i < data.length; i++) {
+  // Start from index 0 (headers already removed by processSheetData)
+  for (let i = 0; i < data.length; i++) {
     const row = data[i];
 
     // Check if row exists and has enough columns
@@ -46,8 +46,22 @@ export function sumif(
     const categoryValue = row[colB];
     const targetValue = row[targetCol];
 
+    // Trim whitespace and tabs from both sides for comparison
+    const trimmedCategory = typeof categoryValue === 'string'
+      ? categoryValue.trim()
+      : categoryValue;
+
     // Match category and sum target column
-    if (categoryValue === category) {
+    if (trimmedCategory === category) {
+      // Add debug logging for first match
+      if (category === '치과재료' && sum === 0) {
+        console.log('  🔍 First match for 치과재료:');
+        console.log('    targetValue:', targetValue, 'type:', typeof targetValue);
+        console.log('    Number(targetValue):', Number(targetValue));
+        console.log('    isNaN:', isNaN(Number(targetValue)));
+        console.log('    isFinite:', isFinite(Number(targetValue)));
+      }
+
       // Handle null, undefined, empty strings, and non-numeric values
       if (
         targetValue !== null &&
@@ -87,16 +101,54 @@ export function calculateComparison(
   previousSummary: any[][],
   previousAdjustment: any[][]
 ): ComparisonResult {
+  // Log initial data received
+  console.log('📊 Calculator received data:');
+  console.log('  Current Summary rows:', currentSummary.length, 'cols:', currentSummary[0]?.length);
+  console.log('  Current Adjustment rows:', currentAdjustment.length, 'cols:', currentAdjustment[0]?.length);
+  console.log('  Previous Summary rows:', previousSummary.length, 'cols:', previousSummary[0]?.length);
+  console.log('  Previous Adjustment rows:', previousAdjustment.length, 'cols:', previousAdjustment[0]?.length);
+
+  // Log first few rows to see data structure
+  console.log('  Current Summary first 10 rows:', currentSummary.slice(0, 10));
+  console.log('  Previous Summary first 10 rows:', previousSummary.slice(0, 10));
+  console.log('  Current Adjustment first 10 rows:', currentAdjustment.slice(0, 10));
+  console.log('  Previous Adjustment first 10 rows:', previousAdjustment.slice(0, 10));
+
   const categories: CategoryData[] = [];
 
   // Process each category
   for (const category of CATEGORIES) {
+    // Log details for the first category to debug
+    if (category === '기공료' || category === '치과재료') {
+      console.log('🔍 Processing category:', category);
+    }
+
     // Current period calculations
     // Excel: =SUMIF(당월DB_상세!$B:$B,비교!$C6,당월DB_상세!$R:$R)
     const currentUsage = sumif(currentSummary, 1, category, 17); // B=1 (0-indexed), R=17
 
     // Excel: =SUMIF(당월DB_재고조정!$B:$B,비교!$C6,당월DB_재고조정!$F:$F)
     const currentAdjustmentValue = sumif(currentAdjustment, 1, category, 5); // B=1, F=5
+
+    // Log detailed adjustment data for first category
+    if (category === '기공료' || category === '치과재료') {
+      console.log('🔍 Adjustment data for', category);
+      console.log('  Current adjustment rows:', currentAdjustment.length);
+      console.log('  Looking at first 20 rows for category matches:');
+      for (let i = 0; i < Math.min(20, currentAdjustment.length); i++) {
+        const row = currentAdjustment[i];
+        if (row && row[1]) {
+          const trimmed = typeof row[1] === 'string' ? row[1].trim() : row[1];
+          console.log(`    Row ${i}: [${row[1]}] trimmed=[${trimmed}] match=${trimmed === category} amount=${row[5]}`);
+        }
+      }
+    }
+
+    // Log values for first category
+    if (category === '기공료' || category === '치과재료') {
+      console.log('  Current usage:', currentUsage);
+      console.log('  Current adjustment:', currentAdjustmentValue);
+    }
 
     // Excel: =+D6-E6
     const currentSubtotal = currentUsage - currentAdjustmentValue;
@@ -107,6 +159,12 @@ export function calculateComparison(
 
     // Excel: =SUMIF(전월DB_재고조정!$B:$B,비교!$B6,전월DB_재고조정!$F:$F)
     const previousAdjustmentValue = sumif(previousAdjustment, 1, category, 5);
+
+    // Log values for first category
+    if (category === '기공료' || category === '치과재료') {
+      console.log('  Previous usage:', previousUsage);
+      console.log('  Previous adjustment:', previousAdjustmentValue);
+    }
 
     // Excel: =+G6-H6
     const previousSubtotal = previousUsage - previousAdjustmentValue;

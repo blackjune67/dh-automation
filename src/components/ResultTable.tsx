@@ -24,33 +24,6 @@ const ResultTable: React.FC<ResultTableProps> = ({ result }) => {
   };
 
   /**
-   * Calculates the sum of current subtotals for Medicine and Consumable categories
-   */
-  const getMedicineConsumableCurrentSum = (): number => {
-    return result.categories
-      .filter(cat => cat.category === '의약품' || cat.category === '소모품')
-      .reduce((sum, cat) => sum + cat.currentSubtotal, 0);
-  };
-
-  /**
-   * Calculates the sum of previous subtotals for Medicine and Consumable categories
-   */
-  const getMedicineConsumablePreviousSum = (): number => {
-    return result.categories
-      .filter(cat => cat.category === '의약품' || cat.category === '소모품')
-      .reduce((sum, cat) => sum + cat.previousSubtotal, 0);
-  };
-
-  /**
-   * Calculates the difference for Medicine and Consumable sum
-   */
-  const getMedicineConsumableDifference = (): number => {
-    const currentSum = getMedicineConsumableCurrentSum();
-    const previousSum = getMedicineConsumablePreviousSum();
-    return currentSum - previousSum;
-  };
-
-  /**
    * Calculates the total difference between current and previous totals
    */
   const getTotalDifference = (): number => {
@@ -120,34 +93,6 @@ const ResultTable: React.FC<ResultTableProps> = ({ result }) => {
               </td>
             </tr>
           ))}
-
-          {/* Medicine + Consumable Sum Row */}
-          <tr className="bg-yellow-50">
-            <td className="border border-gray-300 px-4 py-2 text-left font-bold">
-              의약품 + 소모품
-            </td>
-            <td className="border border-gray-300 px-4 py-2 text-right">
-              -
-            </td>
-            <td className="border border-gray-300 px-4 py-2 text-right">
-              -
-            </td>
-            <td className="border border-gray-300 px-4 py-2 text-right font-bold">
-              {formatNumber(getMedicineConsumableCurrentSum())}
-            </td>
-            <td className="border border-gray-300 px-4 py-2 text-right">
-              -
-            </td>
-            <td className="border border-gray-300 px-4 py-2 text-right">
-              -
-            </td>
-            <td className="border border-gray-300 px-4 py-2 text-right font-bold">
-              {formatNumber(getMedicineConsumablePreviousSum())}
-            </td>
-            <td className={`border border-gray-300 px-4 py-2 text-right font-bold ${getDifferenceColor(getMedicineConsumableDifference())}`}>
-              {formatNumber(getMedicineConsumableDifference())}
-            </td>
-          </tr>
 
           {/* Total Row */}
           <tr className="bg-gray-100">
