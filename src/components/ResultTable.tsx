@@ -28,7 +28,7 @@ const ResultTable: React.FC<ResultTableProps> = ({ result }) => {
    */
   const getMedicineConsumableCurrentSum = (): number => {
     return result.categories
-      .filter(cat => cat.category === 'Medicine' || cat.category === 'Consumable')
+      .filter(cat => cat.category === '의약품' || cat.category === '소모품')
       .reduce((sum, cat) => sum + cat.currentSubtotal, 0);
   };
 
@@ -37,7 +37,7 @@ const ResultTable: React.FC<ResultTableProps> = ({ result }) => {
    */
   const getMedicineConsumablePreviousSum = (): number => {
     return result.categories
-      .filter(cat => cat.category === 'Medicine' || cat.category === 'Consumable')
+      .filter(cat => cat.category === '의약품' || cat.category === '소모품')
       .reduce((sum, cat) => sum + cat.previousSubtotal, 0);
   };
 
@@ -124,7 +124,7 @@ const ResultTable: React.FC<ResultTableProps> = ({ result }) => {
           {/* Medicine + Consumable Sum Row */}
           <tr className="bg-yellow-50">
             <td className="border border-gray-300 px-4 py-2 text-left font-bold">
-              Medicine + Consumable
+              의약품 + 소모품
             </td>
             <td className="border border-gray-300 px-4 py-2 text-right">
               -

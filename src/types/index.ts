@@ -38,20 +38,10 @@ export interface ComparisonResult {
  * Represents the parsed data from an Excel sheet
  */
 export interface SheetData {
-  /** Array of summary row data with category and amount */
-  summary: Array<{
-    /** Category name */
-    category: string;
-    /** Amount value */
-    amount: number;
-  }>;
-  /** Array of adjustment row data with category and amount */
-  adjustment: Array<{
-    /** Category name */
-    category: string;
-    /** Amount value */
-    amount: number;
-  }>;
+  /** Raw 2D array from Summary sheet (rows and columns) */
+  summary: any[][];
+  /** Raw 2D array from Adjustment sheet (rows and columns) */
+  adjustment: any[][];
 }
 
 /**

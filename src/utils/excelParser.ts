@@ -1,6 +1,5 @@
 import * as XLSX from 'xlsx';
 import type { SheetData } from '../types';
-import { isValidNumber, isNonEmptyString } from '../types';
 
 /**
  * Parses an Excel file and extracts Summary and Adjustment sheet data
@@ -25,13 +24,13 @@ export function parseExcelFile(file: File): Promise<SheetData> {
 
         // Find the Summary sheet
         const summarySheetName = workbook.SheetNames.find(
-          (name) => name === 'Summary(T상세)'
+          (name) => name === 'Summary(상세)'
         );
 
         if (!summarySheetName) {
           reject(
             new Error(
-              'Required sheet "Summary(T상세)" not found in Excel file. Available sheets: ' +
+              'Required sheet "Summary(상세)" not found in Excel file. Available sheets: ' +
                 workbook.SheetNames.join(', ')
             )
           );
@@ -60,10 +59,10 @@ export function parseExcelFile(file: File): Promise<SheetData> {
           );
         }
 
-        // Process the raw data into structured format
+        // Return raw data directly for SUMIF operations
         const sheetData: SheetData = {
-          summary: processSummaryData(summaryRawData),
-          adjustment: processAdjustmentData(adjustmentRawData),
+          summary: summaryRawData,
+          adjustment: adjustmentRawData,
         };
 
         resolve(sheetData);
@@ -86,62 +85,3 @@ export function parseExcelFile(file: File): Promise<SheetData> {
   });
 }
 
-/**
- * Processes raw summary sheet data into structured format
- * @param rawData - 2D array from sheet_to_json
- * @returns Array of category and amount pairs
- */
-function processSummaryData(
-  rawData: (string | number)[][]
-): Array<{ category: string; amount: number }> {
-  const result: Array<{ category: string; amount: number }> = [];
-
-  for (const row of rawData) {
-    // Skip empty rows
-    if (!row || row.length === 0) continue;
-
-    // Assuming first column is category, second is amount
-    // Adjust indices based on actual sheet structure
-    const category = row[0];
-    const amount = row[1];
-
-    if (isNonEmptyString(category) && isValidNumber(amount)) {
-      result.push({
-        category: category.trim(),
-        amount,
-      });
-    }
-  }
-
-  return result;
-}
-
-/**
- * Processes raw adjustment sheet data into structured format
- * @param rawData - 2D array from sheet_to_json
- * @returns Array of category and amount pairs
- */
-function processAdjustmentData(
-  rawData: (string | number)[][]
-): Array<{ category: string; amount: number }> {
-  const result: Array<{ category: string; amount: number }> = [];
-
-  for (const row of rawData) {
-    // Skip empty rows
-    if (!row || row.length === 0) continue;
-
-    // Assuming first column is category, second is amount
-    // Adjust indices based on actual sheet structure
-    const category = row[0];
-    const amount = row[1];
-
-    if (isNonEmptyString(category) && isValidNumber(amount)) {
-      result.push({
-        category: category.trim(),
-        amount,
-      });
-    }
-  }
-
-  return result;
-}
