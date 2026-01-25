@@ -19,9 +19,9 @@ function processSheetData(rawData: any[][]): any[][] {
       if (catIndex !== -1) {
         headerRowIndex = i;
 
-        console.log('✅ Found header at row', i, '품목구분 at col', catIndex, '사용금액 at col',
+        /* console.log('✅ Found header at row', i, '품목구분 at col', catIndex, '사용금액 at col',
           row.findIndex(cell => typeof cell === 'string' && (cell.includes('사용금액') || cell.includes('사용 금액')))
-        );
+        ); */
         break;
       }
     }
@@ -58,13 +58,13 @@ export function parseExcelFile(file: File): Promise<SheetData> {
 
         // Parse the workbook
         const workbook = XLSX.read(data, { type: 'binary' });
-        console.log('📊 Available sheets in file:', workbook.SheetNames);
+        // console.log('📊 Available sheets in file:', workbook.SheetNames);
 
         // Find the Summary sheet
         const summarySheetName = workbook.SheetNames.find(
           (name) => name === 'Summary (상세)'
         );
-        console.log('✅ Found Summary sheet:', summarySheetName || 'NOT FOUND');
+        // console.log('✅ Found Summary sheet:', summarySheetName || 'NOT FOUND');
 
         if (!summarySheetName) {
           reject(
@@ -80,7 +80,7 @@ export function parseExcelFile(file: File): Promise<SheetData> {
         const adjustmentSheetName = workbook.SheetNames.find(
           (name) => name === '재고조정'
         );
-        console.log('📋 Found Adjustment sheet:', adjustmentSheetName || 'NOT FOUND');
+        // console.log('📋 Found Adjustment sheet:', adjustmentSheetName || 'NOT FOUND');
 
         // Parse Summary sheet
         const summarySheet = workbook.Sheets[summarySheetName];
@@ -103,7 +103,7 @@ export function parseExcelFile(file: File): Promise<SheetData> {
         const processedSummary = processSheetData(summaryRawData);
         const processedAdjustment = processSheetData(adjustmentRawData);
 
-        console.log('📈 Processed - Summary rows:', processedSummary.length, 'Adjustment rows:', processedAdjustment.length);
+        // console.log('📈 Processed - Summary rows:', processedSummary.length, 'Adjustment rows:', processedAdjustment.length);
 
         // Return raw data directly for SUMIF operations
         const sheetData: SheetData = {

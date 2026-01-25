@@ -1,15 +1,15 @@
-import type { ComparisonResult, CategoryData } from '../types';
+import type { ComparisonResult, CategoryData } from "../types";
 
 /**
  * Categories for comparison
  */
 export const CATEGORIES = [
-  '기공료',
-  '임플란트',
-  '치과재료',
-  '기공재료',
-  '의약품',
-  '소모품',
+  "기공료",
+  "임플란트",
+  "치과재료",
+  "기공재료",
+  "의약품",
+  "소모품",
 ] as const;
 
 /**
@@ -30,7 +30,7 @@ export function sumif(
   data: any[][],
   colB: number,
   category: string,
-  targetCol: number
+  targetCol: number,
 ): number {
   let sum = 0;
 
@@ -47,26 +47,25 @@ export function sumif(
     const targetValue = row[targetCol];
 
     // Trim whitespace and tabs from both sides for comparison
-    const trimmedCategory = typeof categoryValue === 'string'
-      ? categoryValue.trim()
-      : categoryValue;
+    const trimmedCategory =
+      typeof categoryValue === "string" ? categoryValue.trim() : categoryValue;
 
     // Match category and sum target column
     if (trimmedCategory === category) {
       // Add debug logging for first match
-      if (category === '치과재료' && sum === 0) {
+      /* if (category === '치과재료' && sum === 0) {
         console.log('  🔍 First match for 치과재료:');
         console.log('    targetValue:', targetValue, 'type:', typeof targetValue);
         console.log('    Number(targetValue):', Number(targetValue));
         console.log('    isNaN:', isNaN(Number(targetValue)));
         console.log('    isFinite:', isFinite(Number(targetValue)));
-      }
+      } */
 
       // Handle null, undefined, empty strings, and non-numeric values
       if (
         targetValue !== null &&
         targetValue !== undefined &&
-        targetValue !== ''
+        targetValue !== ""
       ) {
         const numValue = Number(targetValue);
         if (!isNaN(numValue) && isFinite(numValue)) {
@@ -99,29 +98,29 @@ export function calculateComparison(
   currentSummary: any[][],
   currentAdjustment: any[][],
   previousSummary: any[][],
-  previousAdjustment: any[][]
+  previousAdjustment: any[][],
 ): ComparisonResult {
   // Log initial data received
-  console.log('📊 Calculator received data:');
+  /* console.log('📊 Calculator received data:');
   console.log('  Current Summary rows:', currentSummary.length, 'cols:', currentSummary[0]?.length);
   console.log('  Current Adjustment rows:', currentAdjustment.length, 'cols:', currentAdjustment[0]?.length);
   console.log('  Previous Summary rows:', previousSummary.length, 'cols:', previousSummary[0]?.length);
-  console.log('  Previous Adjustment rows:', previousAdjustment.length, 'cols:', previousAdjustment[0]?.length);
+  console.log('  Previous Adjustment rows:', previousAdjustment.length, 'cols:', previousAdjustment[0]?.length); */
 
   // Log first few rows to see data structure
-  console.log('  Current Summary first 10 rows:', currentSummary.slice(0, 10));
+  /* console.log('  Current Summary first 10 rows:', currentSummary.slice(0, 10));
   console.log('  Previous Summary first 10 rows:', previousSummary.slice(0, 10));
   console.log('  Current Adjustment first 10 rows:', currentAdjustment.slice(0, 10));
-  console.log('  Previous Adjustment first 10 rows:', previousAdjustment.slice(0, 10));
+  console.log('  Previous Adjustment first 10 rows:', previousAdjustment.slice(0, 10)); */
 
   const categories: CategoryData[] = [];
 
   // Process each category
   for (const category of CATEGORIES) {
     // Log details for the first category to debug
-    if (category === '기공료' || category === '치과재료') {
+    /* if (category === '기공료' || category === '치과재료') {
       console.log('🔍 Processing category:', category);
-    }
+    } */
 
     // Current period calculations
     // Excel: =SUMIF(당월DB_상세!$B:$B,비교!$C6,당월DB_상세!$R:$R)
@@ -131,7 +130,7 @@ export function calculateComparison(
     const currentAdjustmentValue = sumif(currentAdjustment, 1, category, 5); // B=1, F=5
 
     // Log detailed adjustment data for first category
-    if (category === '기공료' || category === '치과재료') {
+    /* if (category === '기공료' || category === '치과재료') {
       console.log('🔍 Adjustment data for', category);
       console.log('  Current adjustment rows:', currentAdjustment.length);
       console.log('  Looking at first 20 rows for category matches:');
@@ -142,13 +141,13 @@ export function calculateComparison(
           console.log(`    Row ${i}: [${row[1]}] trimmed=[${trimmed}] match=${trimmed === category} amount=${row[5]}`);
         }
       }
-    }
+    } */
 
     // Log values for first category
-    if (category === '기공료' || category === '치과재료') {
+    /* if (category === '기공료' || category === '치과재료') {
       console.log('  Current usage:', currentUsage);
       console.log('  Current adjustment:', currentAdjustmentValue);
-    }
+    } */
 
     // Excel: =+D6-E6
     const currentSubtotal = currentUsage - currentAdjustmentValue;
@@ -161,10 +160,10 @@ export function calculateComparison(
     const previousAdjustmentValue = sumif(previousAdjustment, 1, category, 5);
 
     // Log values for first category
-    if (category === '기공료' || category === '치과재료') {
-      console.log('  Previous usage:', previousUsage);
-      console.log('  Previous adjustment:', previousAdjustmentValue);
-    }
+    /* if (category === "기공료" || category === "치과재료") {
+      console.log("  Previous usage:", previousUsage);
+      console.log("  Previous adjustment:", previousAdjustmentValue);
+    } */
 
     // Excel: =+G6-H6
     const previousSubtotal = previousUsage - previousAdjustmentValue;
@@ -189,18 +188,20 @@ export function calculateComparison(
   // Excel: =SUM(F6:F11)
   const currentTotal = categories.reduce(
     (sum, cat) => sum + cat.currentSubtotal,
-    0
+    0,
   );
 
   // Excel: =SUM(I6:I11)
   const previousTotal = categories.reduce(
     (sum, cat) => sum + cat.previousSubtotal,
-    0
+    0,
   );
 
   // Excel: =+J10+J11 (의약품 + 소모품)
-  const medicineCategory = categories.find((cat) => cat.category === '의약품');
-  const consumableCategory = categories.find((cat) => cat.category === '소모품');
+  const medicineCategory = categories.find((cat) => cat.category === "의약품");
+  const consumableCategory = categories.find(
+    (cat) => cat.category === "소모품",
+  );
   const medicineConsumableSum =
     (medicineCategory?.difference || 0) + (consumableCategory?.difference || 0);
 
