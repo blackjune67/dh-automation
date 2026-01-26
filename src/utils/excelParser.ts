@@ -60,25 +60,25 @@ export function parseExcelFile(file: File): Promise<SheetData> {
         const workbook = XLSX.read(data, { type: 'binary' });
         // console.log('📊 Available sheets in file:', workbook.SheetNames);
 
-        // Find the Summary sheet
+        // Find the Summary sheet (ignore whitespace differences)
         const summarySheetName = workbook.SheetNames.find(
-          (name) => name === 'Summary (상세)'
+          (name) => name.replace(/\s/g, '') === 'Summary(상세)'
         );
         // console.log('✅ Found Summary sheet:', summarySheetName || 'NOT FOUND');
 
         if (!summarySheetName) {
           reject(
             new Error(
-              'Required sheet "Summary (상세)" not found in Excel file. Available sheets: ' +
+              'Required sheet "Summary(상세)" not found in Excel file. Available sheets: ' +
                 workbook.SheetNames.join(', ')
             )
           );
           return;
         }
 
-        // Find the Adjustment sheet (optional)
+        // Find the Adjustment sheet (optional, ignore whitespace differences)
         const adjustmentSheetName = workbook.SheetNames.find(
-          (name) => name === '재고조정'
+          (name) => name.replace(/\s/g, '') === '재고조정'
         );
         // console.log('📋 Found Adjustment sheet:', adjustmentSheetName || 'NOT FOUND');
 
