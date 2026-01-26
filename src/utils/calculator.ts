@@ -1,4 +1,4 @@
-import type { ComparisonResult, CategoryData } from "../types";
+import type { ComparisonResult, CategoryData, ProcessedSheet } from "../types";
 
 /**
  * Categories for comparison
@@ -89,81 +89,57 @@ export function sumif(
  *
  * @remarks
  * Calculation logic based on Excel formulas:
- * - Usage: SUMIF(summary!$B:$B, category, summary!$R:$R)
- * - Adjustment: SUMIF(adjustment!$B:$B, category, adjustment!$F:$F)
+ * - Usage: SUMIF(summary!category, category, summary!amount)
+ * - Adjustment: SUMIF(adjustment!category, category, adjustment!amount)
  * - Subtotal: Usage - Adjustment
  * - Difference: Current Subtotal - Previous Subtotal
  */
 export function calculateComparison(
-  currentSummary: any[][],
-  currentAdjustment: any[][],
-  previousSummary: any[][],
-  previousAdjustment: any[][],
+  currentSummary: ProcessedSheet,
+  currentAdjustment: ProcessedSheet,
+  previousSummary: ProcessedSheet,
+  previousAdjustment: ProcessedSheet,
 ): ComparisonResult {
-  // Log initial data received
-  /* console.log('📊 Calculator received data:');
-  console.log('  Current Summary rows:', currentSummary.length, 'cols:', currentSummary[0]?.length);
-  console.log('  Current Adjustment rows:', currentAdjustment.length, 'cols:', currentAdjustment[0]?.length);
-  console.log('  Previous Summary rows:', previousSummary.length, 'cols:', previousSummary[0]?.length);
-  console.log('  Previous Adjustment rows:', previousAdjustment.length, 'cols:', previousAdjustment[0]?.length); */
-
-  // Log first few rows to see data structure
-  /* console.log('  Current Summary first 10 rows:', currentSummary.slice(0, 10));
-  console.log('  Previous Summary first 10 rows:', previousSummary.slice(0, 10));
-  console.log('  Current Adjustment first 10 rows:', currentAdjustment.slice(0, 10));
-  console.log('  Previous Adjustment first 10 rows:', previousAdjustment.slice(0, 10)); */
+  // 헤더에서 찾은 열 인덱스 로그
+  console.log('📊 Summary 열 인덱스 - 카테고리열:', currentSummary.columns.categoryCol, '금액열:', currentSummary.columns.amountCol);
+  console.log('📊 재고조정 열 인덱스 - 카테고리열:', currentAdjustment.columns.categoryCol, '금액열:', currentAdjustment.columns.amountCol);
 
   const categories: CategoryData[] = [];
 
   // Process each category
   for (const category of CATEGORIES) {
-    // Log details for the first category to debug
-    /* if (category === '기공료' || category === '치과재료') {
-      console.log('🔍 Processing category:', category);
-    } */
+    // Current period calculations using dynamic column indices
+    const currentUsage = sumif(
+      currentSummary.data,
+      currentSummary.columns.categoryCol,
+      category,
+      currentSummary.columns.amountCol,
+    );
 
-    // Current period calculations
-    // Excel: =SUMIF(당월DB_상세!$B:$B,비교!$C6,당월DB_상세!$R:$R)
-    const currentUsage = sumif(currentSummary, 1, category, 17); // B=1 (0-indexed), R=17
-
-    // Excel: =SUMIF(당월DB_재고조정!$B:$B,비교!$C6,당월DB_재고조정!$F:$F)
-    const currentAdjustmentValue = sumif(currentAdjustment, 1, category, 5); // B=1, F=5
-
-    // Log detailed adjustment data for first category
-    /* if (category === '기공료' || category === '치과재료') {
-      console.log('🔍 Adjustment data for', category);
-      console.log('  Current adjustment rows:', currentAdjustment.length);
-      console.log('  Looking at first 20 rows for category matches:');
-      for (let i = 0; i < Math.min(20, currentAdjustment.length); i++) {
-        const row = currentAdjustment[i];
-        if (row && row[1]) {
-          const trimmed = typeof row[1] === 'string' ? row[1].trim() : row[1];
-          console.log(`    Row ${i}: [${row[1]}] trimmed=[${trimmed}] match=${trimmed === category} amount=${row[5]}`);
-        }
-      }
-    } */
-
-    // Log values for first category
-    /* if (category === '기공료' || category === '치과재료') {
-      console.log('  Current usage:', currentUsage);
-      console.log('  Current adjustment:', currentAdjustmentValue);
-    } */
+    const currentAdjustmentValue = sumif(
+      currentAdjustment.data,
+      currentAdjustment.columns.categoryCol,
+      category,
+      currentAdjustment.columns.amountCol,
+    );
 
     // Excel: =+D6-E6
     const currentSubtotal = currentUsage - currentAdjustmentValue;
 
-    // Previous period calculations
-    // Excel: =SUMIF(전월DB_상세!$B:$B,비교!$B6,전월DB_상세!$R:$R)
-    const previousUsage = sumif(previousSummary, 1, category, 17);
+    // Previous period calculations using dynamic column indices
+    const previousUsage = sumif(
+      previousSummary.data,
+      previousSummary.columns.categoryCol,
+      category,
+      previousSummary.columns.amountCol,
+    );
 
-    // Excel: =SUMIF(전월DB_재고조정!$B:$B,비교!$B6,전월DB_재고조정!$F:$F)
-    const previousAdjustmentValue = sumif(previousAdjustment, 1, category, 5);
-
-    // Log values for first category
-    /* if (category === "기공료" || category === "치과재료") {
-      console.log("  Previous usage:", previousUsage);
-      console.log("  Previous adjustment:", previousAdjustmentValue);
-    } */
+    const previousAdjustmentValue = sumif(
+      previousAdjustment.data,
+      previousAdjustment.columns.categoryCol,
+      category,
+      previousAdjustment.columns.amountCol,
+    );
 
     // Excel: =+G6-H6
     const previousSubtotal = previousUsage - previousAdjustmentValue;

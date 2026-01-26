@@ -35,13 +35,33 @@ export interface ComparisonResult {
 }
 
 /**
+ * Column indices found dynamically from headers
+ */
+export interface ColumnIndices {
+  /** Column index for category (품목구분/대분류) */
+  categoryCol: number;
+  /** Column index for amount (사용 금액/금액) */
+  amountCol: number;
+}
+
+/**
+ * Processed sheet with data and column mapping
+ */
+export interface ProcessedSheet {
+  /** Raw 2D array of data (without header rows) */
+  data: any[][];
+  /** Dynamically found column indices */
+  columns: ColumnIndices;
+}
+
+/**
  * Represents the parsed data from an Excel sheet
  */
 export interface SheetData {
-  /** Raw 2D array from Summary sheet (rows and columns) */
-  summary: any[][];
-  /** Raw 2D array from Adjustment sheet (rows and columns) */
-  adjustment: any[][];
+  /** Processed Summary sheet with data and column indices */
+  summary: ProcessedSheet;
+  /** Processed Adjustment sheet with data and column indices */
+  adjustment: ProcessedSheet;
 }
 
 /**
