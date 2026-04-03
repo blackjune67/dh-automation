@@ -1,5 +1,6 @@
 import { Agentation } from "agentation";
 import { FileUpload } from "./components/FileUpload";
+import { LoadingStatus } from "./components/LoadingStatus";
 import ResultTable from "./components/ResultTable";
 import { useComparisonStore } from "./store/useComparisonStore";
 import { useExcelComparison } from "./hooks/useExcelComparison";
@@ -68,25 +69,32 @@ function App() {
   return (
     <>
       {import.meta.env.DEV && <Agentation />}
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 relative overflow-hidden">
-        {/* Decorative background elements */}
-        <div className="absolute top-0 left-0 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" />
-        <div
-          className="absolute top-0 right-0 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"
-          style={{ animationDelay: "1s" }}
-        />
-        <div
-          className="absolute bottom-0 left-1/2 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"
-          style={{ animationDelay: "2s" }}
-        />
+      <div className="min-h-screen bg-gradient-to-br from-violet-50 via-fuchsia-50 to-sky-50 relative overflow-hidden">
+
+        {/* ── Aurora background blobs ── */}
+        <div className="absolute top-[-8%] left-[-6%] w-[28rem] h-[28rem] bg-purple-300 rounded-full mix-blend-multiply filter blur-[90px] animate-aurora" />
+        <div className="absolute top-[-4%] right-[-6%] w-96 h-96 bg-fuchsia-300 rounded-full mix-blend-multiply filter blur-[80px] animate-aurora-reverse" style={{ animationDelay: "3s" }} />
+        <div className="absolute top-[30%] left-[-8%] w-80 h-80 bg-pink-200 rounded-full mix-blend-multiply filter blur-[70px] animate-aurora" style={{ animationDelay: "7s" }} />
+        <div className="absolute top-[20%] right-[-4%] w-[26rem] h-[26rem] bg-blue-300 rounded-full mix-blend-multiply filter blur-[90px] animate-aurora-reverse" style={{ animationDelay: "2s" }} />
+        <div className="absolute bottom-[-8%] left-[20%] w-96 h-96 bg-violet-200 rounded-full mix-blend-multiply filter blur-[80px] animate-aurora" style={{ animationDelay: "10s" }} />
+        <div className="absolute bottom-[-4%] right-[25%] w-80 h-80 bg-cyan-200 rounded-full mix-blend-multiply filter blur-[70px] animate-aurora-reverse" style={{ animationDelay: "5s" }} />
+
+        {/* ── Floating micro-particles ── */}
+        <div className="absolute top-[22%] left-[18%] w-2 h-2 rounded-full bg-purple-400/50 animate-particle" style={{ animationDelay: "0s" }} />
+        <div className="absolute top-[35%] right-[22%] w-1.5 h-1.5 rounded-full bg-pink-400/50 animate-particle" style={{ animationDelay: "1.8s" }} />
+        <div className="absolute top-[60%] left-[30%] w-2.5 h-2.5 rounded-full bg-blue-400/40 animate-particle" style={{ animationDelay: "3.2s" }} />
+        <div className="absolute top-[48%] right-[15%] w-1.5 h-1.5 rounded-full bg-violet-400/50 animate-particle" style={{ animationDelay: "4.8s" }} />
+        <div className="absolute top-[75%] left-[65%] w-2 h-2 rounded-full bg-fuchsia-400/40 animate-particle" style={{ animationDelay: "2.4s" }} />
+        <div className="absolute top-[12%] left-[50%] w-1.5 h-1.5 rounded-full bg-sky-400/40 animate-particle" style={{ animationDelay: "6s" }} />
 
         <div className="relative container mx-auto px-4 py-8 md:py-12 max-w-6xl">
-          {/* Header */}
-          <div className="text-center mb-10 md:mb-14">
-            <div className="inline-block mb-4">
+
+          {/* ── Header ── */}
+          <div className="text-center mb-10 md:mb-14 animate-slide-up">
+            <div className="inline-block mb-4 animate-float-y">
               <span className="text-5xl md:text-6xl">📊</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-blue-600 mb-4">
+            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-blue-600 mb-4 animate-shimmer">
               엑셀 사용량 비교
             </h1>
             <div className="space-y-2">
@@ -99,8 +107,11 @@ function App() {
             </div>
           </div>
 
-          {/* File Upload Section */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-purple-100 p-6 md:p-8 space-y-8 mb-8">
+          {/* ── File Upload Section ── */}
+          <div
+            className="glass-card gradient-border rounded-3xl animate-glow-pulse p-6 md:p-8 space-y-8 mb-8 animate-slide-up"
+            style={{ animationDelay: "0.1s" }}
+          >
             <FileUpload
               label="당월 엑셀 파일"
               value={currentFile}
@@ -114,45 +125,24 @@ function App() {
             />
 
             {/* Calculate Button */}
-            <div className="pt-8 mt-4 border-t-2 border-purple-100">
+            <div className="pt-8 mt-4 border-t-2 border-purple-100/60">
               <button
                 type="button"
                 onClick={handleCalculate}
                 disabled={isCalculateDisabled}
                 className={`
-                w-full rounded-2xl px-8 py-5 text-lg font-bold text-white shadow-lg
-                transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-purple-400 focus:ring-offset-2
-                ${
-                  isCalculateDisabled
-                    ? "bg-slate-300 cursor-not-allowed opacity-60"
-                    : "bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 hover:from-purple-600 hover:via-pink-600 hover:to-blue-600 hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98]"
-                }
-              `}
+                  w-full rounded-2xl px-8 py-5 text-lg font-bold text-white
+                  transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-purple-400 focus:ring-offset-2
+                  cursor-pointer
+                  ${
+                    isCalculateDisabled
+                      ? "bg-slate-300 cursor-not-allowed opacity-50 shadow-none"
+                      : "bg-gradient-to-r from-purple-500 via-fuchsia-500 to-blue-500 shadow-lg shadow-purple-300/40 hover:shadow-2xl hover:shadow-purple-400/50 hover:from-purple-600 hover:via-pink-600 hover:to-blue-600 hover:scale-[1.025] active:scale-[0.975]"
+                  }
+                `}
               >
                 {isPending ? (
-                  <span className="flex items-center justify-center space-x-3">
-                    <svg
-                      className="animate-spin h-6 w-6 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    <span>열심히 계산하는 중... 🔢</span>
-                  </span>
+                  <LoadingStatus />
                 ) : (
                   <span className="flex items-center justify-center gap-2">
                     <span>✨</span>
@@ -165,7 +155,7 @@ function App() {
 
             {/* Error Display */}
             {error && (
-              <div className="mt-4 rounded-2xl bg-gradient-to-r from-red-50 to-rose-50 border-2 border-rose-200 px-5 py-4 shadow-sm">
+              <div className="mt-4 rounded-2xl bg-gradient-to-r from-red-50 to-rose-50 border border-rose-200/80 px-5 py-4 shadow-sm shadow-rose-100 animate-slide-up">
                 <div className="flex items-center space-x-3">
                   <span className="text-2xl">😢</span>
                   <p className="text-sm font-semibold text-rose-700">{error}</p>
@@ -176,7 +166,10 @@ function App() {
 
           {/* Results Section */}
           {result && (
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-6 md:p-8">
+            <div
+              className="glass-card gradient-border rounded-3xl animate-glow-pulse p-6 md:p-8 animate-slide-up"
+              style={{ animationDelay: "0.05s" }}
+            >
               <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-6 flex items-center gap-3">
                 <span className="text-3xl">📋</span>
                 비교 결과
